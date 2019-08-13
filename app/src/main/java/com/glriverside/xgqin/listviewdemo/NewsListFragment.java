@@ -1,28 +1,20 @@
 package com.glriverside.xgqin.listviewdemo;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class NewsListFragment extends Fragment {
 
@@ -38,6 +30,8 @@ public class NewsListFragment extends Fragment {
 
     private NewsAdapter newsAdapter = null;
     private ListView lvNewsList;
+
+    private OnItemClickListener listener;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,7 +51,26 @@ public class NewsListFragment extends Fragment {
         newsAdapter = new NewsAdapter(context, R.layout.list_item, newsList);
         lvNewsList.setAdapter(newsAdapter);
 
+        lvNewsList.setOnItemClickListener(new ListView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (listener != null) {
+                    listener.onItemClick(i);
+                }
+            }
+        });
+
         return rootView;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
     }
 
     private void initData() {
@@ -81,5 +94,17 @@ public class NewsListFragment extends Fragment {
 
             newsList.add(news);
         }
+    }
+
+    public void setItemClickListener (OnItemClickListener listener) {
+        try {
+            this.listener = listener;
+        }catch (ClassCastException e) {
+            throw new ClassCastException(listener.toString() + "must implement OnItemClickListener");
+        }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(int id);
     }
 }
